@@ -11,14 +11,11 @@ import { useThemeColors } from '../../../src/Hooks/useThemeColors';
 export default function EventDetailScreen() {
   const params = useLocalSearchParams();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
-  
   const router = useRouter();
   const colors = useThemeColors();
-  
   const event = useStore((state) => state.events.find((e) => e.id === id));
   const updateEvent = useStore((state) => state.updateEvent);
   const deleteEvent = useStore((state) => state.deleteEvent);
-
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
@@ -100,8 +97,6 @@ export default function EventDetailScreen() {
       console.log('✅ Suppression confirmée pour ID:', id); 
       if (id) {
         deleteEvent(id);
-        console.log('🎉 Événement supprimé du store');
-        console.log('📋 Events restants:', useStore.getState().events);
         router.replace('/events');
       } else {
         console.error(' ID manquant !');

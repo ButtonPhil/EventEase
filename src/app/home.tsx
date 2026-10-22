@@ -1,8 +1,6 @@
 import { useRouter } from 'expo-router';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { useStore } from '../../src/Store/useStore';
-
-// Importation de notre système de thème
 import { ThemedText } from '../../src/Components/ThemedText';
 import { ThemedView } from '../../src/Components/ThemedView';
 import { useThemeColors } from '../../src/Hooks/useThemeColors';
@@ -18,7 +16,6 @@ export default function HomeScreen() {
     logout();
     router.replace('/');
   };
-
   if (!currentUser) {
     router.replace('/');
     return null;

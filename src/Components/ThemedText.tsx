@@ -1,10 +1,8 @@
-// src/Components/ThemedText.tsx
 import { Text, type TextProps, StyleSheet } from 'react-native';
 import { useThemeColors } from '../Hooks/useThemeColors';
 import { Colors } from '../Constants/colors';
 
 const styles = StyleSheet.create({
-  // Tailles de texte standards
   h1: {
     fontSize: 28,
     fontWeight: 'bold',

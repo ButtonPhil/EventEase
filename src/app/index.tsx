@@ -1,4 +1,3 @@
-// src/app/index.tsx
 import React, { useState } from 'react';
 import { TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -22,15 +21,12 @@ export default function LoginScreen() {
       return;
     }
 
-    // ID stable basé sur l'email pour que l'utilisateur soit reconnu à chaque connexion
     const stableId = 'user_' + email.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-
     const mockUser: User = {
       id: stableId,
       name: name.trim(),
       email: email.trim(),
     };
-
     login(mockUser);
     router.replace('/events');
   };

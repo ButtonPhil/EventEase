@@ -27,7 +27,7 @@ export async function getWeatherByCity(city: string): Promise<WeatherData | null
       description: data.weather[0].description,
       icon: data.weather[0].icon,
       humidity: data.main.humidity,
-      wind: Math.round(data.wind.speed * 3.6), // Conversion m/s -> km/h
+      wind: Math.round(data.wind.speed * 3.6),
     };
   } catch (error) {
     console.error('Erreur API météo:', error);
@@ -35,7 +35,6 @@ export async function getWeatherByCity(city: string): Promise<WeatherData | null
   }
 }
 
-// URL pour les icônes météo OpenWeather
 export function getWeatherIconUrl(iconCode: string): string {
   return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
 }

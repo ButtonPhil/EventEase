@@ -23,7 +23,6 @@ export function EventCard({ event }: EventCardProps) {
     ? (participations[currentUser.id] || []).includes(event.id)
     : false;
   const router = useRouter();
-
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loadingWeather, setLoadingWeather] = useState(false);
 

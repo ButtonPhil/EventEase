@@ -32,13 +32,10 @@ export default function EventsScreen() {
       router.replace('/');
     }
   };
-
   if (!currentUser) return null;
-
   const sortedEvents = [...events].sort((a, b) => 
     new Date(a.date).getTime() - new Date(b.date).getTime()
   );
-
   return (
     <ThemedView background="background" style={styles.container}>
       {/* ✅ Header avec les deux boutons côte à côte */}

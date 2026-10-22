@@ -12,7 +12,6 @@ export default function AddEventScreen() {
     const router = useRouter();
     const colors = useThemeColors();
     const addEvent = useStore((state) => state.addEvent);
-
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [date, setDate] = useState('');
@@ -23,7 +22,6 @@ export default function AddEventScreen() {
             Alert.alert('Erreur', 'Le titre, la description et la date sont obligatoires.');
             return;
         }
-
         const parseEuropeanDate = (input: string): string | null => {
             if (!isNaN(new Date(input).getTime())) {
                 return new Date(input).toISOString();
@@ -45,9 +43,7 @@ export default function AddEventScreen() {
             }
             return null;
         };
-
         const validDateString = parseEuropeanDate(date);
-
         if (!validDateString) {
             Alert.alert(
                 'Erreur de format',
@@ -55,7 +51,6 @@ export default function AddEventScreen() {
             );
             return;
         }
-
         const newEvent: AppEvent = {
             id: Date.now().toString(),
             title: title.trim(),
@@ -63,7 +58,6 @@ export default function AddEventScreen() {
             date: validDateString,
             location: location.trim() || undefined,
         };
-
         addEvent(newEvent);
         Alert.alert('Succès', 'Événement ajouté avec succès !');
         router.back();
