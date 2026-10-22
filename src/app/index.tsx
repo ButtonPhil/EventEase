@@ -1,62 +1,86 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+// src/app/index.tsx
+import React, { useState } from 'react';
+import { TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useStore } from '../../src/Store/useStore';
+import { User } from '../../src/Types';
+import { ThemedText } from '../../src/Components/ThemedText';
+import { ThemedView } from '../../src/Components/ThemedView';
+import { useThemeColors } from '../../src/Hooks/useThemeColors';
+import { ThemeToggleButton } from '../../src/Components/ThemeToggleButton';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+export default function LoginScreen() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const router = useRouter();
+  const login = useStore((state) => state.login);
+  const colors = useThemeColors();
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+  const handleLogin = () => {
+    if (!name.trim() || !email.trim()) {
+      Alert.alert('Erreur', 'Veuillez remplir tous les champs');
+      return;
+    }
+
+    // ID stable basé sur l'email pour que l'utilisateur soit reconnu à chaque connexion
+    const stableId = 'user_' + email.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    const mockUser: User = {
+      id: stableId,
+      name: name.trim(),
+      email: email.trim(),
+    };
+
+    login(mockUser);
+    router.replace('/events');
+  };
+
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
-
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
+    <ThemedView background="background" style={styles.container}>
+      <ThemeToggleButton />
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <ThemedText variant="h1" color="primary" style={styles.title}>
+          EventEase
+        </ThemedText>
+        <ThemedText variant="body" color="textSecondary" style={styles.subtitle}>
+          Connectez-vous pour gérer vos événements
         </ThemedText>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+        <TextInput
+          style={[styles.input, {
+            backgroundColor: colors.cardBackground,
+            borderColor: colors.border,
+            color: colors.text
+          }]}
+          placeholder="Votre nom"
+          placeholderTextColor={colors.textLight}
+          value={name}
+          onChangeText={setName}
+          autoCapitalize="words"
+        />
+        <TextInput
+          style={[styles.input, {
+            backgroundColor: colors.cardBackground,
+            borderColor: colors.border,
+            color: colors.text
+          }]}
+          placeholder="Votre email"
+          placeholderTextColor={colors.textLight}
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: colors.primary }]}
+          onPress={handleLogin}
+        >
+          <ThemedText variant="button" style={{ color: '#FFFFFF' }}>
+            Se connecter
+          </ThemedText>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
     </ThemedView>
   );
 }
@@ -65,34 +89,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+    padding: 20,
   },
   title: {
     textAlign: 'center',
+    marginBottom: 10,
   },
-  code: {
-    textTransform: 'uppercase',
+  subtitle: {
+    textAlign: 'center',
+    marginBottom: 40,
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  input: {
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 15,
+    borderWidth: 1,
+    fontSize: 16,
+  },
+  button: {
+    padding: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 10,
   },
 });
