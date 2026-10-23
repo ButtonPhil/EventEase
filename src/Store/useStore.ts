@@ -5,13 +5,20 @@ import { User, AppEvent } from '../Types';
 
 type ThemeMode = 'light' | 'dark' | 'system';
 
+interface RegisteredUser {
+  email: string;
+  password: string;
+  name: string;
+}
+
 interface AppState {
   currentUser: User | null;
   events: AppEvent[];
   theme: ThemeMode;
   participations: Record<string, string[]>;
+  registeredUsers: RegisteredUser[];
 
-  login: (user: User) => void;
+  login: (email: string, password: string) => boolean;
   logout: () => void;
   setTheme: (theme: ThemeMode) => void;
 
@@ -29,8 +36,48 @@ export const useStore = create<AppState>()(
       events: [],
       theme: 'system',
       participations: {},
+      registeredUsers: [],
 
-      login: (user) => set({ currentUser: user }),
+      login: (email: string, password: string) => {
+        const state = get();
+        const emailLower = email.trim().toLowerCase();
+        const existingUser = state.registeredUsers.find(
+          (u) => u.email.toLowerCase() === emailLower
+        );
+
+        if (existingUser) {
+          if (existingUser.password !== password) {
+            return false;
+          }
+          set({
+            currentUser: {
+              id: 'user_' + emailLower.replace(/[^a-z0-9]/g, ''),
+              name: existingUser.name,
+              email: existingUser.email,
+            },
+          });
+          return true;
+        } else {
+          const generatedName = emailLower.split('@')[0];
+          const capitalizedName = generatedName.charAt(0).toUpperCase() + generatedName.slice(1);
+          const newUser: RegisteredUser = {
+            email: emailLower,
+            password: password,
+            name: capitalizedName,
+          };
+
+          set({
+            registeredUsers: [...state.registeredUsers, newUser],
+            currentUser: {
+              id: 'user_' + emailLower.replace(/[^a-z0-9]/g, ''),
+              name: capitalizedName,
+              email: emailLower,
+            },
+          });
+          return true;
+        }
+      },
+
       logout: () => set({ currentUser: null }),
       setTheme: (theme) => set({ theme }),
 
@@ -57,9 +104,9 @@ export const useStore = create<AppState>()(
         if (!state.currentUser) return state;
         const userId = state.currentUser.id;
         const userParticipations = state.participations[userId] || [];
-        
+
         const isParticipating = userParticipations.includes(eventId);
-        
+
         return {
           participations: {
             ...state.participations,
